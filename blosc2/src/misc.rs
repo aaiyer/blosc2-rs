@@ -7,6 +7,8 @@ use crate::CompressAlgo;
 
 /// Get a list of compressors names supported in the current build.
 pub fn list_compressors() -> impl Iterator<Item = &'static str> {
+    crate::global::global_init();
+
     let compressors = unsafe { blosc2_sys::blosc2_list_compressors() };
     let len = unsafe { libc::strlen(compressors) };
     let slice: &'static [u8] = unsafe { std::slice::from_raw_parts(compressors.cast(), len + 1) };
@@ -25,6 +27,8 @@ pub fn list_compressors() -> impl Iterator<Item = &'static str> {
 ///
 /// A tuple containing the compression library name and its version.
 pub fn compressor_lib_info(compressor: CompressAlgo) -> (String, String) {
+    crate::global::global_init();
+
     let mut compname = MaybeUninit::uninit();
     unsafe { blosc2_sys::blosc2_compcode_to_compname(compressor as _, compname.as_mut_ptr()) };
     let compname = unsafe { compname.assume_init() };

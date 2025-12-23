@@ -118,7 +118,7 @@ impl Ndarray {
 
         crate::global::global_init();
 
-        let urlpath = storage.urlpath.map(path2cstr);
+        let urlpath = storage.urlpath.map(path2cstr).transpose()?;
         let urlpath = urlpath
             .as_ref()
             .map(|p| p.as_ptr().cast_mut())
@@ -1498,7 +1498,9 @@ impl Ndarray {
     ///
     /// The offset of the saved array in the file.
     pub fn save(&self, urlpath: &Path, append: bool) -> Result<u64, Error> {
-        let urlpath = path2cstr(urlpath);
+        crate::global::global_init();
+
+        let urlpath = path2cstr(urlpath)?;
         let offset = if !append {
             unsafe { blosc2_sys::b2nd_save(self.as_ptr(), urlpath.as_ptr().cast_mut()) }
                 .into_result()?;
