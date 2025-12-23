@@ -145,6 +145,8 @@ impl SChunk {
 
     /// Create a super chunk from an existing in-memory buffer.
     pub fn from_buffer(buffer: CowVec<u8>) -> Result<Self, Error> {
+        crate::global::global_init();
+
         let buffer = BytesMaybePassOwnershipToC::new(buffer);
         let schunk = unsafe {
             blosc2_sys::blosc2_schunk_from_buffer(
